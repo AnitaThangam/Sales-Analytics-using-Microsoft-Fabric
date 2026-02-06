@@ -1,0 +1,39 @@
+# Sales Analytics using Microsoft Fabri
+
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error
+import mlflow
+import mlflow.sklearn
+
+# Load data from OneLake / CSV
+df = pd.read_csv("../data/sales_data.csv")
+
+# Basic cleaning
+df['OrderDate'] = pd.to_datetime(df['OrderDate'])
+df.dropna(inplace=True)
+
+# Feature engineering
+df['YearMonth'] = df['OrderDate'].dt.to_period('M')
+monthly_sales = df.groupby('YearMonth')['SalesAmount'].sum().reset_index()
+monthly_sales['YearMonth'] = monthly_sales['YearMonth'].astype(str)
+
+# Prepare data for forecasting
+monthly_sales['t'] = range(len(monthly_sales))
+X = monthly_sales[['t']]
+y = monthly_sales['SalesAmount']
+
+# Train model
+model = LinearRegression()
+
+with mlflow.start_run():
+    model.fit(X, y)
+    predictions = model.predict(X)
+    
+    mae = mean_absolute_error(y, predictions)
+    mlflow.log_metric("MAE", mae)
+    mlflow.sklearn.log_model(model, "sales_forecast_model")
+
+monthly_sales['PredictedSales'] = predictions
+monthly_sales.tail()
