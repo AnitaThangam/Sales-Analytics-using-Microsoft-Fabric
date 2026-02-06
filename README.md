@@ -38,10 +38,13 @@ Power BI Dashboard
 
 ## Dataset
 - Sample sales dataset containing:
+  - Order ID
   - Order Date
   - Product Category
+  - Product Name
   - Region
   - Quantity
+  - Unit Price
   - Sales Amount
 
 ---
@@ -81,7 +84,7 @@ Power BI Dashboard
 ---
 
 ## Key Insights
-- Identified seasonal sales patterns
+- Identified **seasonal sales patterns**
 - Highlighted high-performing regions and product categories
 - Forecasted future sales to support data-driven planning
 
